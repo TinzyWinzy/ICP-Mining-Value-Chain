@@ -1,0 +1,24 @@
+type ExplorationData = record {
+  id : text;
+  mineralDeposits : text;
+  createdAt : nat64;
+  description : text;
+  updatedAt : opt nat64;
+  location : text;
+  rockType : text;
+};
+type ExplorationDataPayload = record {
+  mineralDeposits : text;
+  description : text;
+  location : text;
+  rockType : text;
+};
+type _AzleResult = variant { Ok : ExplorationData; Err : text };
+type _AzleResult_1 = variant { Ok : vec ExplorationData; Err : text };
+service : () -> {
+  addExplorationData : (ExplorationDataPayload) -> (_AzleResult);
+  deleteExplorationData : (text) -> (_AzleResult);
+  getExplorationData : () -> (_AzleResult_1) query;
+  getExplorationDataById : (text) -> (_AzleResult) query;
+  updateExplorationData : (text, ExplorationDataPayload) -> (_AzleResult);
+}
