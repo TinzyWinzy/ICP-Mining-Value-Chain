@@ -27,14 +27,22 @@ export function getExplorationData(): Result<Vec<ExplorationData>, string> {
 
 $query;
 export function getExplorationDataById(id: string): Result<ExplorationData, string> {
+    if (!id) {
+        return Result.Err<ExplorationData, string>('ID is required');
+    }
+    
     return match(explorationDataStorage.get(id), {
         Some: (explorationData) => Result.Ok<ExplorationData, string>(explorationData),
-        None: () => Result.Err<ExplorationData, string>(`exploration data with id=${id} not found`)
+        None: () => Result.Err<ExplorationData, string>(`Exploration data with id=${id} not found`)
     });
 }
 
 $update;
 export function addExplorationData(payload: ExplorationDataPayload): Result<ExplorationData, string> {
+    if (!payload.description || !payload.mineralDeposits || !payload.location || !payload.rockType) {
+        return Result.Err<ExplorationData, string>('All fields (description, mineralDeposits, location, rockType) are required');
+    }
+
     const explorationData: ExplorationData = { id: uuidv4(), createdAt: ic.time(), updatedAt: Opt.None, ...payload };
     explorationDataStorage.insert(explorationData.id, explorationData);
     return Result.Ok<ExplorationData, string>(explorationData);
@@ -42,33 +50,45 @@ export function addExplorationData(payload: ExplorationDataPayload): Result<Expl
 
 $update;
 export function updateExplorationData(id: string, payload: ExplorationDataPayload): Result<ExplorationData, string> {
+    if (!id) {
+        return Result.Err<ExplorationData, string>('ID is required');
+    }
+
+    if (!payload.description && !payload.mineralDeposits && !payload.location && !payload.rockType) {
+        return Result.Err<ExplorationData, string>('At least one field (description, mineralDeposits, location, rockType) must be provided for update');
+    }
+
     return match(explorationDataStorage.get(id), {
         Some: (explorationData) => {
-            const updatedExplorationData: ExplorationData = {...explorationData, ...payload, updatedAt: Opt.Some(ic.time())};
+            const updatedExplorationData: ExplorationData = { ...explorationData, ...payload, updatedAt: Opt.Some(ic.time()) };
             explorationDataStorage.insert(explorationData.id, updatedExplorationData);
             return Result.Ok<ExplorationData, string>(updatedExplorationData);
         },
-        None: () => Result.Err<ExplorationData, string>(`couldn't update exploration data with id=${id}. exploration data not found`)
+        None: () => Result.Err<ExplorationData, string>(`Couldn't update exploration data with id=${id}. Exploration data not found`)
     });
 }
 
 $update;
 export function deleteExplorationData(id: string): Result<ExplorationData, string> {
+    if (!id) {
+        return Result.Err<ExplorationData, string>('ID is required');
+    }
+
     return match(explorationDataStorage.remove(id), {
         Some: (deletedExplorationData) => Result.Ok<ExplorationData, string>(deletedExplorationData),
-        None: () => Result.Err<ExplorationData, string>(`couldn't delete exploration data with id=${id}. exploration data not found.`)
+        None: () => Result.Err<ExplorationData, string>(`Couldn't delete exploration data with id=${id}. Exploration data not found.`)
     });
 }
 
 globalThis.crypto = {
     // @ts-ignore
-   getRandomValues: () => {
-       let array = new Uint8Array(32)
+    getRandomValues: () => {
+        let array = new Uint8Array(32)
 
-       for (let i = 0; i < array.length; i++) {
-           array[i] = Math.floor(Math.random() * 256)
-       }
+        for (let i = 0; i < array.length; i++) {
+            array[i] = Math.floor(Math.random() * 256)
+        }
 
-       return array
-   }
+        return array
+    }
 }
