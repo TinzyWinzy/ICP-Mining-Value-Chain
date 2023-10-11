@@ -1,7 +1,6 @@
 import { $query, $update, Record, StableBTreeMap, Vec, match, Result, nat64, ic, Opt } from 'azle';
 import { v4 as uuidv4 } from 'uuid';
 
-// Refactored types:
 
 type ExplorationData = Record<{
   id: string;
@@ -20,11 +19,9 @@ type ExplorationDataPayload = Record<{
   rockType: string;
 }>;
 
-// Refactored storage:
 
 const explorationDataStorage = new StableBTreeMap<string, ExplorationData>(0, 44, 1024);
 
-// Refactored queries:
 
 $query;
 export function getExplorationData(page: number, pageSize: number): Result<Vec<ExplorationData>, string> {
@@ -63,7 +60,6 @@ export function getExplorationDataById(id: string): Result<ExplorationData, stri
   });
 }
 
-// Refactored updates:
 
 $update;
 export function addExplorationData(payload: ExplorationDataPayload): Result<ExplorationData, string> {
