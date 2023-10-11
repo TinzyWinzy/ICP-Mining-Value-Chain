@@ -18,7 +18,9 @@ type _AzleResult_1 = variant { Ok : vec ExplorationData; Err : text };
 service : () -> {
   addExplorationData : (ExplorationDataPayload) -> (_AzleResult);
   deleteExplorationData : (text) -> (_AzleResult);
-  getExplorationData : () -> (_AzleResult_1) query;
+  filterExplorationDataByLocation : (text) -> (_AzleResult_1) query;
+  getExplorationData : (float64, float64) -> (_AzleResult_1) query;
   getExplorationDataById : (text) -> (_AzleResult) query;
+  searchExplorationData : (text) -> (_AzleResult_1) query;
   updateExplorationData : (text, ExplorationDataPayload) -> (_AzleResult);
 }
